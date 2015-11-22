@@ -34,10 +34,15 @@ func (h Handler) Get(key string) []byte {
 	fi, err := os.Stat(file)
 	panicon(err)
 	age := time.Since(fi.ModTime()).Minutes()
-	if age > h.Life {
-		err := os.Remove(file)
+	if h.Life > 0 {
+		fi, err := os.Stat(file)
 		panicon(err)
-		return nil
+		age := time.Since(fi.ModTime()).Minutes()
+		if age > h.Life {
+			err := os.Remove(file)
+			panicon(err)
+			return nil
+		}
 	}
 	return result
 }
