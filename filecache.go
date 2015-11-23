@@ -31,9 +31,6 @@ func (h Handler) Get(key string) []byte {
 	if err != nil {
 		return nil
 	}
-	fi, err := os.Stat(file)
-	panicon(err)
-	age := time.Since(fi.ModTime()).Minutes()
 	if h.Life > 0 {
 		fi, err := os.Stat(file)
 		panicon(err)
