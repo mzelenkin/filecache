@@ -10,6 +10,7 @@ import (
 	"os/user"
 	"strings"
 	"time"
+	"sync"
 )
 
 // Type Handler holds the cache directory and cache
@@ -17,15 +18,22 @@ import (
 type Handler struct {
 	Dir  string
 	Life float64
+	rwMutex sync.RWMutex
 }
 
 // Set saves content to the cache
 func (h Handler) Set(key string, data []byte) error {
+	h.rwMutex.Lock()
+	defer h.rwMutex.Unlock()
+	
 	return ioutil.WriteFile(h.Filename(key), data, 0644)
 }
 
 // Get returns content from the cache
 func (h Handler) Get(key string) []byte {
+	h.rwMutex.RLock()
+	defer h.rwMutex.RUnlock()
+	
 	file := h.Filename(key)
 	result, err := ioutil.ReadFile(file)
 	if err != nil {
